@@ -1,0 +1,23 @@
+{
+  "name": "ajax-action-confirm-button",
+  "version": "1.0.1",
+  "description": "AJAX Action - Confirm Button",
+  "author": "Daniel Sitek (https://github.com/danielsitek)",
+  "main": "index.js",
+  "dependencies": {
+    "chameleon-stylus-plugin": "~0.4.6"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chameleonui/ajax-action-confirm-button"
+    },
+  "keywords": [
+    "ajax",
+    "button",
+    "confirm"
+  ],
+  "license": "MIT",
+  "readmeFilename": "Readme.md"
+}

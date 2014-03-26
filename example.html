@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX Action - Confirm Button</title>
+    <link rel="stylesheet" href="./build/build.css">
+    <link rel="stylesheet" href="./example.css">
+</head>
+<body>
+    
+    <h1>AJAX Action - Confirm Button Example</h1>
+
+    <div class="listed-buttons">
+        <p>
+            <a href="http://experiments.apiary.io/action-confirm-button" class="button-default js-action-confirm">Button action 1</a>
+        </p>
+        <p>
+            <a href="http://experiments.apiary.io/action-confirm-button-2" class="button-default js-action-confirm">Button action 2</a>
+        </p>
+        <p>
+            <a href="http://experiments.apiary.io/action-confirm-button" class="button-default js-action-confirm">Button action 3</a>
+        </p>
+    </div>
+    <div>
+        <p>
+            <a href="#" class="js-add-button">Add button</a>
+        </p>
+    </div>
+
+    <h2>Buttons</h2>
+
+    <p><a href="#" class="button-default">Button Action</a></p>
+    <p><a href="#" class="button-disabled"><i class="fa fa-spinner fa-spin"></i></a></p>
+    <p><a href="#" class="button-primary">Button Confirm</a></p>
+
+    
+    <script src="./build/build.js"></script>
+    <script>
+        var AjaxActionConfirmButton = require('ajax-action-confirm-button');
+        var jQuery = require('component-jquery');
+
+        (function(){
+            var list = jQuery('.listed-buttons');
+
+            jQuery('body').on('click', '.js-add-button', this, function(event) {
+                event.preventDefault();
+                var num = list.children().length;
+                list.append('<p><a href="http://experiments.apiary.io/action-confirm-button" class="button-default js-action-confirm">Button action ' + (num + 1) + '</a></p>');
+            });
+            
+        }).call(jQuery);
+
+
+        var AjaxActionConfirmButtonConstructor = function(element) {
+            window.active = 0;
+
+            var istance = new AjaxActionConfirmButton(element, {
+                url: function() {
+                    return element.href;
+                },
+                callback: function (xhrResponse) {
+                    return xhrResponse.status === 200;
+                },
+                states: {
+                    success: {
+                        content: 'Yeah Success!',
+                    }
+                }
+            });
+
+            istance.on('request', function() {
+                window.active = this.active;
+            });
+
+            istance.on('response', function() {
+                window.active = this.active;
+            });
+
+            istance.on('error', function() {
+                console.log(this.element, this.response);
+            });
+
+            istance.on('success', function() {
+                console.log(this.element, this.response);
+            });
+
+        };
+
+        jQuery('body').on('click', '.js-action-confirm', function(event) {
+            event.preventDefault();
+            jQuery(this).removeClass('js-action-confirm');
+
+            AjaxActionConfirmButtonConstructor(this);
+        });
+        
+    </script>
+</body>
+</html>

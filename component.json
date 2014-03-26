@@ -1,0 +1,21 @@
+{
+  "name": "ajax-action-confirm-button",
+  "repo": "chameleonui/ajax-action-confirm-button",
+  "description": "AJAX Action - Confirm button component",
+  "version": "1.0.0",
+  "keywords": ["ajax", "button", "confirm"],
+  "dependencies": {
+    "chameleonui/merge-objects": "*",
+    "component/jquery": "*",
+    "component/emitter": "*"
+  },
+  "development": {
+    "components/font-awesome": "*",
+    "chameleonui/css3": "*"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": [
+    "index.js"
+  ]
+}
