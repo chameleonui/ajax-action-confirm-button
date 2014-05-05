@@ -1,5 +1,8 @@
 /**
- * AJAX Action - Confirm Button
+ * AJAX Action Confirm Button
+ *
+ * version: v1.1.0
+ * author: Daniel Sitek
  */
 
 var $ = require('jquery');
@@ -10,12 +13,10 @@ var MergeObjects = require('merge-objects');
 var defaults = {
     confirmDelay: 500,
     method: 'GET',
-    contentType: 'application/json; charset=UTF-8',
-    url: function() {
-        return "/action-confirm-button";
-    },
+    contentType: 'text/plain; charset=UTF-8',
+    url: '/action-confirm-button',
     data: function() {
-        return window.encodeURIComponent('data');
+        return window.encodeURIComponent('name') + '=' + window.encodeURIComponent('value');
     },
     callback: function (xhrResponse) {
         return xhrResponse.status >= 200 && xhrResponse.status <= 399;
@@ -26,10 +27,10 @@ var defaults = {
             classes: 'button-default',
             title: 'Action State'
         },
-        waiting: {
+        delay: {
             content: '<i class="fa fa-spinner fa-spin"></i>',
             classes: 'button-disabled',
-            title: 'Waiting State'
+            title: 'Hold-on State'
         },
         confirm: {
             content: 'Button Confirm',
@@ -60,9 +61,10 @@ function AjaxActionConfirmButton(element, options) {
     this.options = new MergeObjects(options || {}, defaults);
     this.element = element;
     this.response = {};
-    this.active = 0;
-    this.actionStateInnerHtml;
-    this.actionStateTitle;
+    this.localActionState = {};
+    
+    // create global flag activeAJAX
+    window.activeAJAX = 0;
 
     this._init();
 }
@@ -79,7 +81,9 @@ AjaxActionConfirmButton.prototype._init = function() {
 
     component._setDefaults();
 
-    component._stateChange('waiting');
+    component.emit('action');
+
+    component._stateChange('delay');
 };
 
 AjaxActionConfirmButton.prototype._click = function(fn) {
@@ -87,6 +91,7 @@ AjaxActionConfirmButton.prototype._click = function(fn) {
     var component = this;
 
     component.element.onclick = function(event) {
+        event.preventDefault();
         fn(event);
         return false;
     };
@@ -99,7 +104,7 @@ AjaxActionConfirmButton.prototype._stateChange = function(newStateName) {
     if (component.options.states[newStateName]) {
 
         component.element.setAttribute('class', component.options.states[newStateName].classes);
-        component.element.setAttribute('title', component.options.states[newStateName].title);
+        component.element.title = component.options.states[newStateName].title;
         component.element.innerHTML = component.options.states[newStateName].content;
 
         component[newStateName]();
@@ -116,22 +121,26 @@ AjaxActionConfirmButton.prototype._setDefaults = function() {
     var component = this;
 
     if (component.element.innerHTML) {
-        component.actionStateInnerHtml = component.element.innerHTML;
+        component.localActionState.content = component.element.innerHTML;
     }
     if (component.element.title) {
-        component.actionStateTitle = component.element.title;
+        component.localActionState.title = component.element.title;
     }
+    component.localActionState.classes = component.element.getAttribute('class');
 };
 
 AjaxActionConfirmButton.prototype._getDefaults = function() {
     
     var component = this;
 
-    if (component.actionStateInnerHtml) {
-        component.element.innerHTML = component.actionStateInnerHtml;
+    if (component.localActionState.content) {
+        component.element.innerHTML = component.localActionState.content;
     }
-    if (component.actionStateTitle) {
-        component.element.title = component.actionStateTitle;
+    if (component.localActionState.title) {
+        component.element.title = component.localActionState.title;
+    }
+    if (component.localActionState.classes) {
+        component.element.setAttribute('class', component.localActionState.classes);
     }
 };
 
@@ -143,17 +152,23 @@ AjaxActionConfirmButton.prototype.action = function() {
     // if saved, get saved defaults
     component._getDefaults();
 
-    component._click(function() {
+    component.emit('action');
 
-        component._stateChange('waiting');
+    component._click(function(event) {
+
+        event.preventDefault();
+        component._stateChange('delay');
+        return false;
     });
 };
 
-AjaxActionConfirmButton.prototype.waiting = function() {
+AjaxActionConfirmButton.prototype.delay = function() {
     
     var component = this;
 
-    component._click(function(){});
+    component.emit('delay');
+
+    component._click(function(event){ event.preventDefault(); return false; });
 
     setTimeout(function() {
 
@@ -166,9 +181,13 @@ AjaxActionConfirmButton.prototype.confirm = function() {
     
     var component = this;
 
-    component._click(function() {
+    component.emit('confirm');
 
+    component._click(function(event) {
+
+        event.preventDefault();
         component._stateChange('loading');
+        return false;
     });
 };
 
@@ -176,7 +195,9 @@ AjaxActionConfirmButton.prototype.loading = function() {
     
     var component = this;
 
-    component._click(function(){});
+    component.emit('loading');
+    
+    component._click(function(event){ event.preventDefault(); return false; });
 
     component._XHRrequest();
 };
@@ -185,9 +206,13 @@ AjaxActionConfirmButton.prototype.error = function() {
     
     var component = this;
 
-    component._click(function() {
+    component.emit('error');
 
+    component._click(function(event) {
+
+        event.preventDefault();
         component._stateChange('action');
+        return false;
     });
 };
 
@@ -195,9 +220,13 @@ AjaxActionConfirmButton.prototype.success = function() {
     
     var component = this;
 
-    component._click(function() {
+    component.emit('success');
+    
+    component._click(function(event) {
 
+        event.preventDefault();
         component._stateChange('action');
+        return false;
     });
 };
 
@@ -206,15 +235,15 @@ AjaxActionConfirmButton.prototype._XHRrequest = function() {
     
     var component = this;
 
-    component.active = 1;
+    window.activeAJAX = 1;
 
     component.emit('request');
 
     var xhrOptions = {
-        method: component.options.method,
-        contentType: component.options.contentType,
-        url: component.options.url(),
-        data: component.options.data()
+        method:         typeof component.options.method === 'function' ?        component.options.method()      : component.options.method,
+        contentType:    typeof component.options.contentType === 'function' ?   component.options.contentType() : component.options.contentType,
+        url:            typeof component.options.url === 'function' ?           component.options.url()         : component.options.url,
+        data:           typeof component.options.data === 'function' ?          component.options.data()        : component.options.data
     };
 
     component._xhr(xhrOptions, function(xhr) {
@@ -228,24 +257,23 @@ AjaxActionConfirmButton.prototype._XHRresponse = function() {
     
     var component = this;
 
-    component.active = 0;
-
     if ( component.options.callback(component.response) ) {
 
         component._stateChange('success');
-        component.emit('success');
 
     } else {
 
         component._stateChange('error');
-        component.emit('error');
     }
+
+    window.activeAJAX = 0;
 
     component.emit('response');
 };
 
 AjaxActionConfirmButton.prototype._xhr = function(options, resFn) {
 
+    // Still using jQuery's AJAX.. i'm planing to chanage it to some simpler xhr component
     $.ajax({
         type: options.method,
         url: options.url,

@@ -1,6 +1,6 @@
 
 build: components index.js
-	@component build --dev
+	@component build
 
 example: components index.js
 	@component build --dev -c -o build -n build -u chameleon-stylus-plugin && stylus stylus/example.styl -o ./

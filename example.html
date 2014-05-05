@@ -13,13 +13,13 @@
 
     <div class="listed-buttons">
         <p>
-            <a href="http://experiments.apiary.io/action-confirm-button" class="button-default js-action-confirm">Button action 1</a>
+            <a href="http://experiments.apiary.io/action-confirm-button-get" data-method="GET" class="button-default js-action-confirm" target="_blank">Button action GET</a>
         </p>
         <p>
-            <a href="http://experiments.apiary.io/action-confirm-button-2" class="button-default js-action-confirm">Button action 2</a>
+            <a href="http://experiments.apiary.io/action-confirm-button-post" data-method="POST" data-contenttype="application/x-www-form-urlencoded; charset=UTF-8" class="button-default js-action-confirm" target="_blank">Button action POST</a>
         </p>
         <p>
-            <a href="http://experiments.apiary.io/action-confirm-button" class="button-default js-action-confirm">Button action 3</a>
+            <a href="http://experiments.apiary.io/action-confirm-button-get" data-method="GET" class="button-default js-action-confirm" target="_blank">Button action GET</a>
         </p>
     </div>
     <div>
@@ -38,7 +38,7 @@
     <script src="./build/build.js"></script>
     <script>
         var AjaxActionConfirmButton = require('ajax-action-confirm-button');
-        var jQuery = require('component-jquery');
+        var jQuery = require('jquery');
 
         (function(){
             var list = jQuery('.listed-buttons');
@@ -46,22 +46,28 @@
             jQuery('body').on('click', '.js-add-button', this, function(event) {
                 event.preventDefault();
                 var num = list.children().length;
-                list.append('<p><a href="http://experiments.apiary.io/action-confirm-button" class="button-default js-action-confirm">Button action ' + (num + 1) + '</a></p>');
+                list.append('<p><a href="http://experiments.apiary.io/action-confirm-button-get" data-method="get" class="button-default js-action-confirm">Button action ' + (num + 1) + '</a></p>');
             });
             
         }).call(jQuery);
 
 
         var AjaxActionConfirmButtonConstructor = function(element) {
-            window.active = 0;
 
             var istance = new AjaxActionConfirmButton(element, {
+                method: function() {
+                    return element.dataset.method;
+                },
+                contentType: function() {
+                    return element.dataset.contenttype || 'text/plain; charset=UTF-8';
+                },
                 url: function() {
                     return element.href;
                 },
                 callback: function (xhrResponse) {
                     return xhrResponse.status === 200;
                 },
+
                 states: {
                     success: {
                         content: 'Yeah Success!',
@@ -70,11 +76,11 @@
             });
 
             istance.on('request', function() {
-                window.active = this.active;
+                console.log('window.activeAJAX', window.activeAJAX);
             });
 
             istance.on('response', function() {
-                window.active = this.active;
+                console.log('window.activeAJAX', window.activeAJAX);
             });
 
             istance.on('error', function() {
@@ -82,7 +88,7 @@
             });
 
             istance.on('success', function() {
-                console.log(this.element, this.response);
+                console.log(this.element, this.element.title, this.response);
             });
 
         };

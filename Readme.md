@@ -1,7 +1,10 @@
 
-# action-confirm-button
+# ajax-action-confirm-button
 
-AJAX Action - Confirm button component.
+Simple and variable ajax multistate button component. Works under patter to confirm action. 
+You can specify classes, inner html and title for every state. You can even specify callback function for xhrResponse to evaluate error or success. Same it is for other options, there you can set variable or function.
+
+Button is firing few events - `request`, `response`, `success` and `error` - which you can use to call or evaluate other scripts.
 
 ## Installation
 
