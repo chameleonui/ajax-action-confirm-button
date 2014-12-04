@@ -1,6 +1,6 @@
 {
   "name": "ajax-action-confirm-button",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "description": "AJAX Action - Confirm Button",
   "author": "Daniel Sitek (https://github.com/danielsitek)",
   "main": "index.js",
