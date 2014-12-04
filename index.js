@@ -1,7 +1,7 @@
 /**
  * AJAX Action Confirm Button
  *
- * version: v1.1.0
+ * version: v1.2.0
  * author: Daniel Sitek
  */
 
@@ -62,7 +62,7 @@ function AjaxActionConfirmButton(element, options) {
     this.element = element;
     this.response = {};
     this.localActionState = {};
-    
+
     // create global flag activeAJAX
     window.activeAJAX = 0;
 
@@ -76,7 +76,7 @@ Emitter(AjaxActionConfirmButton.prototype);
 
 
 AjaxActionConfirmButton.prototype._init = function() {
-    
+
     var component = this;
 
     component._setDefaults();
@@ -98,7 +98,7 @@ AjaxActionConfirmButton.prototype._click = function(fn) {
 };
 
 AjaxActionConfirmButton.prototype._stateChange = function(newStateName) {
-    
+
     var component = this;
 
     if (component.options.states[newStateName]) {
@@ -117,7 +117,7 @@ AjaxActionConfirmButton.prototype._stateChange = function(newStateName) {
 
 // Get and Set default inner html and title, which can rewrite settings in global options
 AjaxActionConfirmButton.prototype._setDefaults = function() {
-    
+
     var component = this;
 
     if (component.element.innerHTML) {
@@ -130,7 +130,7 @@ AjaxActionConfirmButton.prototype._setDefaults = function() {
 };
 
 AjaxActionConfirmButton.prototype._getDefaults = function() {
-    
+
     var component = this;
 
     if (component.localActionState.content) {
@@ -146,7 +146,7 @@ AjaxActionConfirmButton.prototype._getDefaults = function() {
 
 // States functions
 AjaxActionConfirmButton.prototype.action = function() {
-    
+
     var component = this;
 
     // if saved, get saved defaults
@@ -163,7 +163,7 @@ AjaxActionConfirmButton.prototype.action = function() {
 };
 
 AjaxActionConfirmButton.prototype.delay = function() {
-    
+
     var component = this;
 
     component.emit('delay');
@@ -178,7 +178,7 @@ AjaxActionConfirmButton.prototype.delay = function() {
 };
 
 AjaxActionConfirmButton.prototype.confirm = function() {
-    
+
     var component = this;
 
     component.emit('confirm');
@@ -192,18 +192,18 @@ AjaxActionConfirmButton.prototype.confirm = function() {
 };
 
 AjaxActionConfirmButton.prototype.loading = function() {
-    
+
     var component = this;
 
     component.emit('loading');
-    
+
     component._click(function(event){ event.preventDefault(); return false; });
 
     component._XHRrequest();
 };
 
 AjaxActionConfirmButton.prototype.error = function() {
-    
+
     var component = this;
 
     component.emit('error');
@@ -217,11 +217,11 @@ AjaxActionConfirmButton.prototype.error = function() {
 };
 
 AjaxActionConfirmButton.prototype.success = function() {
-    
+
     var component = this;
 
     component.emit('success');
-    
+
     component._click(function(event) {
 
         event.preventDefault();
@@ -232,7 +232,7 @@ AjaxActionConfirmButton.prototype.success = function() {
 
 
 AjaxActionConfirmButton.prototype._XHRrequest = function() {
-    
+
     var component = this;
 
     window.activeAJAX = 1;
@@ -254,7 +254,7 @@ AjaxActionConfirmButton.prototype._XHRrequest = function() {
 };
 
 AjaxActionConfirmButton.prototype._XHRresponse = function() {
-    
+
     var component = this;
 
     if ( component.options.callback(component.response) ) {

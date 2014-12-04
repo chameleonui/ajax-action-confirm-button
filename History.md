@@ -3,6 +3,7 @@
 ### 1.2.0
 
 * Created v1.2.0
+* Updated version in package.json, component.json and index.js
 
 ### 1.1.1
 
