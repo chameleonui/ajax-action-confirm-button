@@ -3,6 +3,8 @@
 ### 1.1.1
 
 * Fixed jQuery dependency in component.json to `"components/jquery": "1.11"`
+* Fixed link to api on Apiary.io
+* Added statusText from apiary to console.log on success request
 
 ### 1.1.0
 
